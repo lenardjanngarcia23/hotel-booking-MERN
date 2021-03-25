@@ -1,55 +1,46 @@
-const express = require('express')
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import morgan from 'morgan';
 
+
+dotenv.config()
+
+// routers
+import routah from './routes/auths'
 const app = express()
 
-app.get('/api/:message', (req, res) => {
-    res.status(200).send(req.params.message)
-})
 
-app.listen(8000, () => console.log(`Server is running in port 8000`))
+// database connection
+const connectDB = async () => {
+    try {
+        const connz = await mongoose.connect(process.env.ATLAS_DATABASE, { 
+            useNewUrlParser: true, 
+            useUnifiedTopology: true, 
+            useCreateIndex: true })
 
-// import express from 'express'
-// import fs from 'fs'
-// import cors from 'cors'
-// import mongoose from 'mongoose'
+            console.log(`Congratulations your MongoDB has connected!!!`)
+    } catch (error) {
+        console.log(`Error: ${error}`)
+    }
+}
 
-// const morgan = require('morgan')
-// require('dotenv').config()
+connectDB()
 
-// // routers
-// // import routah from './routes/auths'
-// const app = express()
+// middleware
+app.use(cors())
+app.use(morgan('dev'))
+app.use(express.json())
 
-
-// // database connection
-// const connectDB = async () => {
-//     try {
-//         const connz = await mongoose.connect(process.env.ATLAS_DATABASE, { 
-//             useNewUrlParser: true, 
-//             useFindAndModify: false, 
-//             useUnifiedTopology: true, 
-//             useCreateIndex: true })
-
-//             console.log(`Congratulations your MongoDB has connected!!!`)
-//     } catch (error) {
-//         console.log(`Error: ${error}`)
-//     }
-// }
-
-// connectDB()
-
-// // middleware
-// app.use(cors())
-// app.use(morgan('dev'))
-
-// // route middleware
+// route middleware
 // fs.readdirSync('./routes').map((r) => 
 //     app.use('/api', require(`./routes/${r}`))
 // )
-// // app.use('/api', routah)
+app.use('/api', routah)
 
-// const port = process.env.PORT || 8000
+const port = process.env.PORT || 8000
 
-// app.listen(port, () => {
-//     console.log(`Server is running in ${port}`)
-// })
+app.listen(port, () => {
+    console.log(`Server is running in ${port}`)
+})
