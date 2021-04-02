@@ -36,7 +36,7 @@ export const userLogin = async (req, res) => {
         if(!user) return res.status(400).send('EMAIL NOT FOUND!')
         // compare password
         user.comparePassword(password, (err, match) => {
-            console.log('Compare password in login error', err)
+            // console.log('Compare password in login error', err)
             if(!match || err) return res.status(400).send('Wrong password')
             // Generate jwt webtoken
             let token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {

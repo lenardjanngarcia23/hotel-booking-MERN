@@ -1,25 +1,44 @@
 import React, { useState } from 'react'
+import {useDispatch} from 'react-redux'
 import { toast } from 'react-toastify'
 import { login } from '../actions/authActions'
 import LoginPage from '../components/LoginForm'
+
 
 const Login = () => {
     const [email, setEmail] = useState("jann@gmail.com")
     const [password, setPassword] = useState("qwerty")
 
+    const dispatch = useDispatch()
+
+    
     const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log('SEND LOGIN DATA', {email, password})
+       
         try {
-            const resp = await login({email, password})
-            // if(resp.data) {
-            //     console.log('Save user response in redux and local storage then redirect ==>', resp)
-            //     console.log(resp.data)
-            // }
+            const res = await login({
+                email,
+                password
+            })
+            console.log(res)
+            if(res) {
+                // save user and token to lcoal storage
+                localStorage.setItem('user_token', JSON.stringify(res.data))
+                dispatch({
+                    type: "LOGGED_IN_USER",
+                    payload: res.data
+                })
+            }
         } catch (err) {
-            console.log(err)
             if(err.response.status === 400) toast.error(err.response.data)
         }
+        
+        // const ress = await axios.post(`${process.env.REACT_APP_API}/login`, {
+        //     email,
+        //     password
+        // })
+        // localStorage.setItem('token', JSON.stringify(ress.data))
+        // console.log(ress)
     }
 
     return (
